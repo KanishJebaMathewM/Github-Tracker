@@ -139,10 +139,30 @@ def main():
 
     print("Fetching stargazers...")
     current_stars = get_stargazers()
-    print(f"  Found {len(current_stars)} stargazers")
+    api_stars_available = len(current_stars) > 0  # False when 403 fallback happened
 
     repo_info = get_repo_info()
     stars_total = repo_info.get("stargazers_count", len(current_stars))
+    print(f"  Found {len(current_stars)} stargazers")
+    print(f"  Repository stars count: {stars_total}")
+
+    # If API returned empty due to 403, load previously saved stars so we don't wipe them
+    if not api_stars_available:
+        prev_stars_file = load_json("stars.json") or []
+        if prev_stars_file:
+            print("  Using previously saved stars.json (API unavailable)")
+            current_stars = prev_stars_file
+        else:
+            # No previous file either — build minimal placeholder entries from snapshot usernames
+            prev_snap = load_json("snapshot.json") or {}
+            prev_star_names = prev_snap.get("stars", [])
+            if prev_star_names:
+                print(f"  Building {len(prev_star_names)} placeholder star entries from snapshot")
+                current_stars = [{
+                    "username": u,
+                    "avatar_url": f"https://github.com/{u}.png?size=80",
+                    "html_url": f"https://github.com/{u}",
+                } for u in prev_star_names]
     print(f"  Repository stars count: {stars_total}")
 
     # Load previous snapshot
