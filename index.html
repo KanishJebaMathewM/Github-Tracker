@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GitHub Tracker</title>
+  <style>
+    :root {
+      --bg: #0d1117;
+      --surface: #161b22;
+      --surface-hover: #1c2129;
+      --border: #30363d;
+      --text: #e6edf3;
+      --text-muted: #8b949e;
+      --accent: #58a6ff;
+      --green: #3fb950;
+      --red: #f85149;
+      --orange: #d29922;
+      --purple: #bc8cff;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      padding: 2rem;
+    }
+
+    .container { max-width: 1200px; margin: 0 auto; }
+
+    header {
+      text-align: center;
+      margin-bottom: 2rem;
+      padding-bottom: 1.5rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    header h1 {
+      font-size: 2rem;
+      margin-bottom: 0.5rem;
+      background: linear-gradient(135deg, var(--accent), var(--purple));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    header .subtitle { color: var(--text-muted); font-size: 0.9rem; }
+    header .last-updated { color: var(--text-muted); font-size: 0.8rem; margin-top: 0.5rem; }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    .stat-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem;
+      text-align: center;
+      transition: transform 0.2s, border-color 0.2s;
+    }
+
+    .stat-card:hover {
+      transform: translateY(-2px);
+      border-color: var(--accent);
+    }
+
+    .stat-card .number {
+      font-size: 2.5rem;
+      font-weight: 700;
+      display: block;
+      margin-bottom: 0.25rem;
+    }
+
+    .stat-card .label {
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .stat-card.followers .number { color: var(--green); }
+    .stat-card.following .number { color: var(--accent); }
+    .stat-card.forks .number { color: var(--purple); }
+    .stat-card.stars .number { color: #e3b341; }
+    .stat-card.notfollowback .number { color: #f778ba; }
+    .stat-card.unfollowers .number { color: var(--red); }
+    .stat-card.unforks .number { color: var(--orange); }
+    .stat-card.unstars .number { color: #d29922; }
+
+    .tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-bottom: 1.5rem;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 0.5rem;
+    }
+
+    .tab {
+      padding: 0.6rem 1.2rem;
+      background: transparent;
+      color: var(--text-muted);
+      border: 1px solid transparent;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      transition: all 0.2s;
+    }
+
+    .tab:hover { color: var(--text); background: var(--surface); }
+
+    .tab.active {
+      color: var(--text);
+      background: var(--surface);
+      border-color: var(--border);
+    }
+
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+
+    .user-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 0.75rem;
+    }
+
+    .user-card {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 0.75rem 1rem;
+      text-decoration: none;
+      color: var(--text);
+      transition: all 0.2s;
+    }
+
+    .user-card:hover {
+      background: var(--surface-hover);
+      border-color: var(--accent);
+      transform: translateX(4px);
+    }
+
+    .user-card img {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      border: 2px solid var(--border);
+    }
+
+    .user-card .info { flex: 1; min-width: 0; }
+
+    .user-card .username {
+      font-weight: 600;
+      font-size: 0.95rem;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .user-card .date {
+      color: var(--text-muted);
+      font-size: 0.75rem;
+      margin-top: 0.15rem;
+    }
+
+    .user-card .badge {
+      font-size: 0.7rem;
+      padding: 0.15rem 0.5rem;
+      border-radius: 999px;
+      font-weight: 600;
+      flex-shrink: 0;
+    }
+
+    .badge.lost { background: rgba(248,81,73,0.15); color: var(--red); }
+    .badge.fork { background: rgba(188,140,255,0.15); color: var(--purple); }
+    .badge.unfork { background: rgba(210,153,34,0.15); color: var(--orange); }
+    .badge.star { background: rgba(227,179,65,0.15); color: #e3b341; }
+    .badge.unstar { background: rgba(210,153,34,0.15); color: var(--orange); }
+    .badge.notfollowback { background: rgba(247, 120, 186, 0.15); color: #f778ba; }
+
+    .empty-state {
+      text-align: center;
+      padding: 3rem;
+      color: var(--text-muted);
+    }
+
+    .empty-state .emoji { font-size: 2.5rem; margin-bottom: 0.5rem; }
+
+    .loading {
+      text-align: center;
+      padding: 3rem;
+      color: var(--text-muted);
+    }
+
+    .loading::after {
+      content: '';
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border: 2px solid var(--border);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin-left: 0.5rem;
+      vertical-align: middle;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .search-box {
+      width: 100%;
+      padding: 0.7rem 1rem;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text);
+      font-size: 0.9rem;
+      margin-bottom: 1rem;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .search-box:focus { border-color: var(--accent); }
+    .search-box::placeholder { color: var(--text-muted); }
+
+    .repo-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      color: var(--accent);
+      text-decoration: none;
+      font-size: 0.85rem;
+    }
+
+    .repo-link:hover { text-decoration: underline; }
+
+    footer {
+      text-align: center;
+      margin-top: 3rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--border);
+      color: var(--text-muted);
+      font-size: 0.8rem;
+    }
+
+    @media (max-width: 600px) {
+      body { padding: 1rem; }
+      header h1 { font-size: 1.5rem; }
+      .stats-grid { grid-template-columns: repeat(2, 1fr); }
+      .user-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>📊 GitHub Tracker</h1>
+      <p class="subtitle">Tracking followers, forks & more</p>
+      <p class="last-updated" id="lastUpdated">Loading...</p>
+    </header>
+
+    <div class="stats-grid" id="statsGrid">
+      <div class="stat-card followers">
+        <span class="number" id="followersCount">-</span>
+        <span class="label">Followers</span>
+      </div>
+      <div class="stat-card following">
+        <span class="number" id="followingCount">-</span>
+        <span class="label">Following</span>
+      </div>
+      <div class="stat-card forks">
+        <span class="number" id="forksCount">-</span>
+        <span class="label">Forks</span>
+      </div>
+      <div class="stat-card stars">
+        <span class="number" id="starsCount">-</span>
+        <span class="label">Stars</span>
+      </div>
+      <div class="stat-card notfollowback">
+        <span class="number" id="notFollowBackCount">-</span>
+        <span class="label">Don't Follow Back</span>
+      </div>
+      <div class="stat-card unfollowers">
+        <span class="number" id="unfollowersCount">-</span>
+        <span class="label">Unfollowers</span>
+      </div>
+      <div class="stat-card unforks">
+        <span class="number" id="unforksCount">-</span>
+        <span class="label">Unforks</span>
+      </div>
+      <div class="stat-card unstars">
+        <span class="number" id="unstarsCount">-</span>
+        <span class="label">Unstars</span>
+      </div>
+    </div>
+
+    <div class="tabs" id="tabs">
+      <button class="tab active" data-tab="followers">👥 Followers</button>
+      <button class="tab" data-tab="following">➡️ Following</button>
+      <button class="tab" data-tab="notfollowback">🚫 Don't Follow Back</button>
+      <button class="tab" data-tab="unfollowers">💔 Unfollowers</button>
+      <button class="tab" data-tab="forks">🍴 Forks</button>
+      <button class="tab" data-tab="unforks">🗑️ Unforks</button>
+      <button class="tab" data-tab="stars">⭐ Stars</button>
+      <button class="tab" data-tab="unstars">💫 Unstars</button>
+    </div>
+
+    <input type="text" class="search-box" id="searchBox" placeholder="Search users...">
+
+    <div id="tabFollowers" class="tab-content active">
+      <div class="loading" id="loadingFollowers">Loading followers</div>
+      <div class="user-grid" id="gridFollowers"></div>
+    </div>
+
+    <div id="tabFollowing" class="tab-content">
+      <div class="loading" id="loadingFollowing">Loading following</div>
+      <div class="user-grid" id="gridFollowing"></div>
+    </div>
+
+    <div id="tabUnfollowers" class="tab-content">
+      <div class="loading" id="loadingUnfollowers">Loading unfollowers</div>
+      <div class="user-grid" id="gridUnfollowers"></div>
+    </div>
+
+    <div id="tabNotfollowback" class="tab-content">
+      <div class="loading" id="loadingNotfollowback">Loading users</div>
+      <div class="user-grid" id="gridNotfollowback"></div>
+    </div>
+
+    <div id="tabForks" class="tab-content">
+      <div class="loading" id="loadingForks">Loading forks</div>
+      <div class="user-grid" id="gridForks"></div>
+    </div>
+
+    <div id="tabUnforks" class="tab-content">
+      <div class="loading" id="loadingUnforks">Loading unforks</div>
+      <div class="user-grid" id="gridUnforks"></div>
+    </div>
+
+    <div id="tabStars" class="tab-content">
+      <div class="loading" id="loadingStars">Loading stars</div>
+      <div class="user-grid" id="gridStars"></div>
+    </div>
+
+    <div id="tabUnstars" class="tab-content">
+      <div class="loading" id="loadingUnstars">Loading unstars</div>
+      <div class="user-grid" id="gridUnstars"></div>
+    </div>
+
+    <footer>
+      <p>Powered by GitHub Actions &bull; Data refreshed every 15 minutes</p>
+      <p style="margin-top: 0.3rem;">Tracking repo: <a class="repo-link" id="repoLink" href="#">-</a></p>
+    </footer>
+  </div>
+
+  <script>
+    const BASE = '.';
+    let allData = {};
+
+    async function fetchJSON(file) {
+      try {
+        const resp = await fetch(`${BASE}/data/${file}?t=${Date.now()}`);
+        if (!resp.ok) return null;
+        return await resp.json();
+      } catch { return null; }
+    }
+
+    function formatDate(iso) {
+      if (!iso) return '';
+      const d = new Date(iso);
+      return d.toLocaleDateString('en-US', {
+        year: 'numeric', month: 'short', day: 'numeric',
+        hour: '2-digit', minute: '2-digit'
+      });
+    }
+
+    function createUserCard(user, opts = {}) {
+      const a = document.createElement('a');
+      a.className = 'user-card';
+      a.href = user.html_url || `https://github.com/${user.username || user.owner}`;
+      a.target = '_blank';
+      a.rel = 'noopener';
+
+      const name = user.username || user.owner;
+      const avatar = user.avatar_url || `https://github.com/${name}.png?size=80`;
+
+      let dateHTML = '';
+      if (user.date) {
+        dateHTML = `<div class="date">${formatDate(user.date)}</div>`;
+      } else if (user.starred_at) {
+        dateHTML = `<div class="date">Starred: ${formatDate(user.starred_at)}</div>`;
+      } else if (user.created_at) {
+        dateHTML = `<div class="date">Forked: ${formatDate(user.created_at)}</div>`;
+      }
+
+      let badgeHTML = '';
+      if (opts.badge) {
+        badgeHTML = `<span class="badge ${opts.badgeClass || ''}">${opts.badge}</span>`;
+      }
+
+      a.innerHTML = `
+        <img src="${avatar}" alt="${name}" loading="lazy">
+        <div class="info">
+          <div class="username">${name}</div>
+          ${dateHTML}
+        </div>
+        ${badgeHTML}
+      `;
+
+      a.dataset.name = name.toLowerCase();
+      return a;
+    }
+
+    function renderGrid(gridId, loadingId, items, opts = {}) {
+      const grid = document.getElementById(gridId);
+      const loading = document.getElementById(loadingId);
+      loading.style.display = 'none';
+
+      if (!items || items.length === 0) {
+        grid.innerHTML = `
+          <div class="empty-state" style="grid-column: 1/-1;">
+            <div class="emoji">${opts.emptyEmoji || '📭'}</div>
+            <p>${opts.emptyText || 'No data yet'}</p>
+          </div>
+        `;
+        return;
+      }
+
+      grid.innerHTML = '';
+      // Show newest first for history lists
+      const sorted = opts.reverse ? [...items].reverse() : items;
+      sorted.forEach(user => {
+        grid.appendChild(createUserCard(user, opts));
+      });
+    }
+
+    function setupTabs() {
+      const tabs = document.querySelectorAll('.tab');
+      tabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+          tabs.forEach(t => t.classList.remove('active'));
+          tab.classList.add('active');
+          document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+          const target = tab.dataset.tab;
+          document.getElementById(`tab${target.charAt(0).toUpperCase() + target.slice(1)}`).classList.add('active');
+          document.getElementById('searchBox').value = '';
+          filterCards('');
+        });
+      });
+    }
+
+    function filterCards(query) {
+      const q = query.toLowerCase().trim();
+      document.querySelectorAll('.user-card').forEach(card => {
+        card.style.display = !q || card.dataset.name.includes(q) ? '' : 'none';
+      });
+    }
+
+    async function init() {
+      setupTabs();
+
+      document.getElementById('searchBox').addEventListener('input', e => {
+        filterCards(e.target.value);
+      });
+
+      // Fetch all data in parallel
+      const [snapshot, followers, following, unfollowers, forks, unforks, stars, unstars] = await Promise.all([
+        fetchJSON('snapshot.json'),
+        fetchJSON('followers.json'),
+        fetchJSON('following.json'),
+        fetchJSON('unfollowers.json'),
+        fetchJSON('forks.json'),
+        fetchJSON('unforks.json'),
+        fetchJSON('stars.json'),
+        fetchJSON('unstars.json'),
+      ]);
+
+      // Update stats
+      if (snapshot) {
+        document.getElementById('followersCount').textContent = snapshot.followers_count ?? 0;
+        document.getElementById('followingCount').textContent = snapshot.following_count ?? 0;
+        document.getElementById('forksCount').textContent = snapshot.forks_count ?? 0;
+        document.getElementById('starsCount').textContent = snapshot.stars_count ?? 0;
+        const duration = snapshot.run_duration_seconds;
+        const durationText = duration != null ? ` · Ran in ${duration}s` : '';
+        document.getElementById('lastUpdated').textContent = `Last updated: ${formatDate(snapshot.last_updated)}${durationText}`;
+      }
+
+      document.getElementById('unfollowersCount').textContent = unfollowers ? unfollowers.length : 0;
+      document.getElementById('unforksCount').textContent = unforks ? unforks.length : 0;
+      document.getElementById('unstarsCount').textContent = unstars ? unstars.length : 0;
+
+      // Try to determine repo link from snapshot or forks
+      const repoLink = document.getElementById('repoLink');
+      if (forks && forks.length > 0 && forks[0].html_url) {
+        const parts = forks[0].html_url.split('/');
+        // fork url is like github.com/forker/repo, parent is the tracked repo
+        repoLink.textContent = 'KanishJebaMathewM/Truxify';
+        repoLink.href = 'https://github.com/KanishJebaMathewM/Truxify';
+      } else {
+        repoLink.textContent = 'KanishJebaMathewM/Truxify';
+        repoLink.href = 'https://github.com/KanishJebaMathewM/Truxify';
+      }
+
+      // Compute users who do not follow back
+      const followerSet = new Set((followers || []).map(u => (u.username || '').toLowerCase()));
+      const notFollowingBack = (following || []).filter(u => !followerSet.has((u.username || '').toLowerCase()));
+      document.getElementById('notFollowBackCount').textContent = notFollowingBack.length;
+
+      // Render grids
+      renderGrid('gridFollowers', 'loadingFollowers', followers, {
+        emptyEmoji: '👥', emptyText: 'No followers data yet. Run the workflow first!'
+      });
+
+      renderGrid('gridFollowing', 'loadingFollowing', following, {
+        emptyEmoji: '➡️', emptyText: 'No following data yet.'
+      });
+
+      renderGrid('gridNotfollowback', 'loadingNotfollowback', notFollowingBack, {
+        badge: "Doesn't Follow Back", badgeClass: 'notfollowback',
+        emptyEmoji: '🤝', emptyText: 'Everyone you follow follows you back!'
+      });
+
+      renderGrid('gridUnfollowers', 'loadingUnfollowers', unfollowers, {
+        badge: 'Unfollowed', badgeClass: 'lost', reverse: true,
+        emptyEmoji: '🎉', emptyText: 'No one has unfollowed you yet!'
+      });
+
+      renderGrid('gridForks', 'loadingForks', forks, {
+        badge: 'Fork', badgeClass: 'fork',
+        emptyEmoji: '🍴', emptyText: 'No forks yet.'
+      });
+
+      renderGrid('gridUnforks', 'loadingUnforks', unforks, {
+        badge: 'Removed', badgeClass: 'unfork', reverse: true,
+        emptyEmoji: '✨', emptyText: 'No unforks detected yet.'
+      });
+
+      renderGrid('gridStars', 'loadingStars', stars, {
+        badge: 'Starred', badgeClass: 'star',
+        emptyEmoji: '⭐', emptyText: 'No stargazers yet.'
+      });
+
+      renderGrid('gridUnstars', 'loadingUnstars', unstars, {
+        badge: 'Unstarred', badgeClass: 'unstar', reverse: true,
+        emptyEmoji: '✨', emptyText: 'No unstars detected yet.'
+      });
+    }
+
+    init();
+  </script>
+</body>
+</html>
