@@ -8,6 +8,16 @@ GITHUB_USERNAME = os.environ.get("GITHUB_USERNAME") or "KanishJebaMathewM"
 TRACK_REPO = os.environ.get("TRACK_REPO") or "KanishJebaMathewM/Truxify"
 DATA_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "data")
 
+# Debug: show which token source is active (mask the value)
+_pat = os.environ.get("GH_PAT", "")
+_default = os.environ.get("GITHUB_TOKEN", "")
+if _pat:
+    print(f"  Auth: using GH_PAT (length={len(_pat)})")
+elif _default:
+    print(f"  Auth: using GITHUB_TOKEN (length={len(_default)}) — may not have stargazer access")
+else:
+    print("  Auth: NO TOKEN found — requests will be unauthenticated")
+
 HEADERS = {
     "Accept": "application/vnd.github+json",
     "X-GitHub-Api-Version": "2022-11-28",
@@ -87,6 +97,12 @@ def get_stargazers():
         # Check status BEFORE raise_for_status so we can handle known restrictions
         if resp.status_code in (401, 403, 404):
             print(f"  Note: GitHub stargazers endpoint returned HTTP {resp.status_code}.")
+            try:
+                err_body = resp.json()
+                print(f"  GitHub message: {err_body.get('message', 'no message')}")
+                print(f"  Documentation: {err_body.get('documentation_url', '')}")
+            except Exception:
+                pass
             print("        GitHub limits individual stargazer listings to repo collaborators.")
             print("        Falling back to total stargazers count from repo info.")
             return []
