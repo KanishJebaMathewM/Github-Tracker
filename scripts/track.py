@@ -82,19 +82,16 @@ def get_repo_info():
 def get_stargazers():
     if not TRACK_REPO:
         return []
-    # Use the star+json accept header to get starred_at timestamps.
-    # NOTE: GitHub restricts the per-user stargazer list to repo collaborators
-    # for repos with many stars. On 401/403/404 we fall back gracefully to just
-    # the total count (already fetched via get_repo_info).
-    star_headers = {**HEADERS, "Accept": "application/vnd.github.star+json"}
+    # Use standard accept header (NOT star+json which requires push access).
+    # The star+json preview header returns starred_at timestamps but needs
+    # collaborator access. Standard header works for any public repo with a PAT.
     results = []
     page = 1
     while True:
         resp = requests.get(
             f"https://api.github.com/repos/{TRACK_REPO}/stargazers?per_page=100&page={page}",
-            headers=star_headers,
+            headers=HEADERS,
         )
-        # Check status BEFORE raise_for_status so we can handle known restrictions
         if resp.status_code in (401, 403, 404):
             print(f"  Note: GitHub stargazers endpoint returned HTTP {resp.status_code}.")
             try:
@@ -103,8 +100,7 @@ def get_stargazers():
                 print(f"  Documentation: {err_body.get('documentation_url', '')}")
             except Exception:
                 pass
-            print("        GitHub limits individual stargazer listings to repo collaborators.")
-            print("        Falling back to total stargazers count from repo info.")
+            print("  Falling back to total stargazers count from repo info.")
             return []
         resp.raise_for_status()
         data = resp.json()
@@ -112,11 +108,11 @@ def get_stargazers():
             break
         results.extend(data)
         page += 1
+    # Standard endpoint returns user objects directly (no starred_at available)
     return [{
-        "username": s["user"]["login"],
-        "avatar_url": s["user"]["avatar_url"],
-        "html_url": s["user"]["html_url"],
-        "starred_at": s["starred_at"],
+        "username": s["login"],
+        "avatar_url": s["avatar_url"],
+        "html_url": s["html_url"],
     } for s in results]
 
 
