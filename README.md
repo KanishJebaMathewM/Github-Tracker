@@ -13,52 +13,27 @@ A self-hosted GitHub Pages dashboard that tracks your followers, following, repo
 - **Run Execution Speed** — Live tracking execution time displayed right on your dashboard
 - **Beautiful Dashboard** — Dark-themed, responsive, searchable with instant filtering
 
-## Setup
+## Setup (Zero Configuration!)
 
-### 1. Create a new GitHub repo
+Everything is pre-configured for your profile (`KanishJebaMathewM`) and repo (`KanishJebaMathewM/Truxify`). **No Personal Access Tokens or repository secrets are required!**
 
-Create a new repository (e.g., `github-tracker`) and push this code to it.
+### 1. Enable GitHub Pages
 
-### 2. Create a Personal Access Token (PAT)
-
-1. Go to [GitHub Settings → Developer Settings → Personal Access Tokens → Fine-grained tokens](https://github.com/settings/tokens?type=beta)
-2. Create a new token with these permissions:
-   - **Repository access**: All repositories (or select the tracked repo)
-   - **Permissions**: `Followers` (read), `Metadata` (read)
-3. Copy the token
-
-### 3. Add Repository Secrets & Variables
-
-Go to your repo → **Settings** → **Secrets and variables** → **Actions**:
-
-**Secrets:**
-| Name | Value |
-|------|-------|
-| `GH_PAT` | Your Personal Access Token from step 2 |
-
-**Variables** (under the "Variables" tab):
-| Name | Value |
-|------|-------|
-| `GITHUB_USERNAME` | `KanishJebaMathewM` |
-| `TRACK_REPO` | `KanishJebaMathewM/Truxify` |
-
-### 4. Enable GitHub Pages
-
-1. Go to repo → **Settings** → **Pages**
+1. Go to your repo → **Settings** → **Pages**
 2. Set **Source** to `Deploy from a branch`
 3. Set **Branch** to `main` and folder to `/ (root)`
-4. Click Save
+4. Click **Save**
 
-### 5. Run the Workflow
+### 2. Run the Workflow (or wait 15 minutes)
 
-1. Go to **Actions** tab
-2. Click on **"Track GitHub Stats"**
-3. Click **"Run workflow"** to trigger the first run
-4. After it completes, your data will be populated
+1. Go to the **Actions** tab in your repo
+2. Click on **"Track GitHub Stats"** in the left sidebar
+3. Click **"Run workflow"** → **Run workflow**
+4. After ~20 seconds, your initial data will be loaded!
 
-### 6. Visit Your Dashboard
+### 3. Visit Your Live Dashboard
 
-Your site will be live at: `https://<your-username>.github.io/<repo-name>/`
+Your site is live at: `https://kanishjebamathewm.github.io/Github-Tracker/`
 
 ## How It Works
 

@@ -27,9 +27,7 @@ jobs:
 
       - name: Run tracking script
         env:
-          GITHUB_TOKEN: ${{ secrets.GH_PAT }}
-          GITHUB_USERNAME: ${{ vars.GITHUB_USERNAME }}
-          TRACK_REPO: ${{ vars.TRACK_REPO }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: python scripts/track.py
 
       - name: Commit and push changes

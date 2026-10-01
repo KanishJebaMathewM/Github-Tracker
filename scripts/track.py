@@ -4,15 +4,16 @@ import requests
 from datetime import datetime, timezone
 
 GITHUB_TOKEN = os.environ.get("GITHUB_TOKEN", "")
-GITHUB_USERNAME = os.environ.get("GITHUB_USERNAME", "")
-TRACK_REPO = os.environ.get("TRACK_REPO", "")
+GITHUB_USERNAME = os.environ.get("GITHUB_USERNAME") or "KanishJebaMathewM"
+TRACK_REPO = os.environ.get("TRACK_REPO") or "KanishJebaMathewM/Truxify"
 DATA_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "data")
 
 HEADERS = {
     "Accept": "application/vnd.github+json",
-    "Authorization": f"Bearer {GITHUB_TOKEN}",
     "X-GitHub-Api-Version": "2022-11-28",
 }
+if GITHUB_TOKEN:
+    HEADERS["Authorization"] = f"Bearer {GITHUB_TOKEN}"
 
 
 def paginate(url):
