@@ -3,7 +3,7 @@ import json
 import requests
 from datetime import datetime, timezone
 
-GITHUB_TOKEN = os.environ.get("GITHUB_TOKEN", "")
+GITHUB_TOKEN = os.environ.get("GH_PAT") or os.environ.get("GITHUB_TOKEN", "")
 GITHUB_USERNAME = os.environ.get("GITHUB_USERNAME") or "KanishJebaMathewM"
 TRACK_REPO = os.environ.get("TRACK_REPO") or "KanishJebaMathewM/Truxify"
 DATA_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "data")
@@ -11,6 +11,7 @@ DATA_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__
 HEADERS = {
     "Accept": "application/vnd.github+json",
     "X-GitHub-Api-Version": "2022-11-28",
+    "User-Agent": "Github-Tracker",
 }
 if GITHUB_TOKEN:
     HEADERS["Authorization"] = f"Bearer {GITHUB_TOKEN}"
@@ -22,6 +23,9 @@ def paginate(url):
     while True:
         sep = "&" if "?" in url else "?"
         resp = requests.get(f"{url}{sep}per_page=100&page={page}", headers=HEADERS)
+        if resp.status_code in (401, 403, 404):
+            print(f"  Warning: {url} returned HTTP {resp.status_code}, skipping.")
+            break
         resp.raise_for_status()
         data = resp.json()
         if not data:
@@ -53,10 +57,25 @@ def get_forks():
     } for f in forks]
 
 
+def get_repo_info():
+    if not TRACK_REPO:
+        return {}
+    try:
+        resp = requests.get(f"https://api.github.com/repos/{TRACK_REPO}", headers=HEADERS)
+        if resp.status_code == 200:
+            return resp.json()
+    except Exception as e:
+        print(f"  Warning fetching repo info: {e}")
+    return {}
+
+
 def get_stargazers():
     if not TRACK_REPO:
         return []
-    # Use star media type to get starred_at timestamps
+    # Use the star+json accept header to get starred_at timestamps.
+    # NOTE: GitHub restricts the per-user stargazer list to repo collaborators
+    # for repos with many stars. On 401/403/404 we fall back gracefully to just
+    # the total count (already fetched via get_repo_info).
     star_headers = {**HEADERS, "Accept": "application/vnd.github.star+json"}
     results = []
     page = 1
@@ -65,6 +84,12 @@ def get_stargazers():
             f"https://api.github.com/repos/{TRACK_REPO}/stargazers?per_page=100&page={page}",
             headers=star_headers,
         )
+        # Check status BEFORE raise_for_status so we can handle known restrictions
+        if resp.status_code in (401, 403, 404):
+            print(f"  Note: GitHub stargazers endpoint returned HTTP {resp.status_code}.")
+            print("        GitHub limits individual stargazer listings to repo collaborators.")
+            print("        Falling back to total stargazers count from repo info.")
+            return []
         resp.raise_for_status()
         data = resp.json()
         if not data:
@@ -115,6 +140,10 @@ def main():
     print("Fetching stargazers...")
     current_stars = get_stargazers()
     print(f"  Found {len(current_stars)} stargazers")
+
+    repo_info = get_repo_info()
+    stars_total = repo_info.get("stargazers_count", len(current_stars))
+    print(f"  Repository stars count: {stars_total}")
 
     # Load previous snapshot
     prev_snapshot = load_json("snapshot.json") or {
@@ -226,7 +255,7 @@ def main():
         "followers_count": len(current_followers),
         "following_count": len(current_following),
         "forks_count": len(current_forks),
-        "stars_count": len(current_stars),
+        "stars_count": stars_total,
         "followers": sorted(curr_follower_names),
         "following": sorted(curr_following_names),
         "forks": sorted(curr_fork_owners),

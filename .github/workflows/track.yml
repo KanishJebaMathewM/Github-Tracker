@@ -27,7 +27,10 @@ jobs:
 
       - name: Run tracking script
         env:
+          GH_PAT: ${{ secrets.GH_PAT }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_USERNAME: KanishJebaMathewM
+          TRACK_REPO: KanishJebaMathewM/Truxify
         run: python scripts/track.py
 
       - name: Commit and push changes

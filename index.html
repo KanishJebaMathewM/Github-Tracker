@@ -8,15 +8,19 @@
     :root {
       --bg: #0d1117;
       --surface: #161b22;
-      --surface-hover: #1c2129;
+      --surface-2: #1c2129;
       --border: #30363d;
       --text: #e6edf3;
       --text-muted: #8b949e;
-      --accent: #58a6ff;
+      --accent: #4f8ef7;
+      --accent-hover: #6aa0ff;
       --green: #3fb950;
       --red: #f85149;
       --orange: #d29922;
-      --purple: #bc8cff;
+      --purple: #a371f7;
+      --pink: #f778ba;
+      --gold: #e3b341;
+      --teal: #39d3c3;
     }
 
     * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -26,142 +30,450 @@
       background: var(--bg);
       color: var(--text);
       min-height: 100vh;
-      padding: 2rem;
+      display: flex;
+      flex-direction: column;
     }
 
-    .container { max-width: 1200px; margin: 0 auto; }
-
-    header {
-      text-align: center;
-      margin-bottom: 2rem;
-      padding-bottom: 1.5rem;
+    /* ── TOP NAVBAR ── */
+    .navbar {
+      background: var(--surface);
       border-bottom: 1px solid var(--border);
+      padding: 0 1.5rem;
+      height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 100;
     }
 
-    header h1 {
-      font-size: 2rem;
-      margin-bottom: 0.5rem;
-      background: linear-gradient(135deg, var(--accent), var(--purple));
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
+    .navbar-left {
+      display: flex;
+      align-items: center;
+      gap: 0.85rem;
     }
 
-    header .subtitle { color: var(--text-muted); font-size: 0.9rem; }
-    header .last-updated { color: var(--text-muted); font-size: 0.8rem; margin-top: 0.5rem; }
+    .navbar-logo {
+      width: 36px;
+      height: 36px;
+      background: #fff;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
 
+    .navbar-logo svg { width: 22px; height: 22px; fill: #0d1117; }
+
+    .navbar-brand h1 {
+      font-size: 1.15rem;
+      font-weight: 700;
+      line-height: 1.2;
+    }
+
+    .navbar-brand h1 span { color: var(--accent); }
+
+    .navbar-brand p {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      line-height: 1.2;
+    }
+
+    .navbar-right {
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+    }
+
+    .status-pill {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--green);
+      box-shadow: 0 0 6px var(--green);
+      flex-shrink: 0;
+      position: relative;
+    }
+
+    .status-pill .label-main {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .status-pill .label-sub {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+    }
+
+    .status-block {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .actions-status {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .actions-status .gh-icon {
+      width: 22px;
+      height: 22px;
+      background: #fff;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .actions-status .gh-icon svg { width: 14px; height: 14px; fill: #0d1117; }
+
+    .actions-status .label-main {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+    }
+
+    .actions-status .running {
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: var(--green);
+    }
+
+    .actions-status .label-sub {
+      font-size: 0.7rem;
+      color: var(--text-muted);
+    }
+
+    .btn-sync {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 0.5rem 1.1rem;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.1s;
+      text-decoration: none;
+    }
+
+    .btn-sync:hover { background: var(--accent-hover); }
+    .btn-sync:active { transform: scale(0.97); }
+
+    .btn-sync svg {
+      width: 15px;
+      height: 15px;
+      fill: none;
+      stroke: #fff;
+      stroke-width: 2.2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    /* ── MAIN CONTENT ── */
+    .main {
+      flex: 1;
+      padding: 1.25rem 1.5rem;
+      max-width: 1180px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    /* ── STAT CARDS GRID ── */
     .stats-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 1rem;
-      margin-bottom: 2rem;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 0.75rem;
+      margin-bottom: 0.85rem;
+    }
+
+    .stats-row2 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.75rem;
+      margin-bottom: 1.25rem;
     }
 
     .stat-card {
       background: var(--surface);
       border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 1.5rem;
-      text-align: center;
-      transition: transform 0.2s, border-color 0.2s;
+      border-radius: 10px;
+      padding: 1rem 1.1rem 0.9rem;
+      display: flex;
+      align-items: flex-start;
+      gap: 0.75rem;
+      position: relative;
+      transition: border-color 0.2s, background 0.2s;
+      cursor: default;
     }
 
     .stat-card:hover {
-      transform: translateY(-2px);
-      border-color: var(--accent);
+      border-color: #444c56;
+      background: var(--surface-2);
     }
 
-    .stat-card .number {
-      font-size: 2.5rem;
-      font-weight: 700;
-      display: block;
-      margin-bottom: 0.25rem;
-    }
-
-    .stat-card .label {
-      color: var(--text-muted);
-      font-size: 0.85rem;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-    }
-
-    .stat-card.followers .number { color: var(--green); }
-    .stat-card.following .number { color: var(--accent); }
-    .stat-card.forks .number { color: var(--purple); }
-    .stat-card.stars .number { color: #e3b341; }
-    .stat-card.notfollowback .number { color: #f778ba; }
-    .stat-card.unfollowers .number { color: var(--red); }
-    .stat-card.unforks .number { color: var(--orange); }
-    .stat-card.unstars .number { color: #d29922; }
-
-    .tabs {
+    .stat-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 8px;
       display: flex;
-      flex-wrap: wrap;
-      gap: 0.5rem;
-      margin-bottom: 1.5rem;
-      border-bottom: 1px solid var(--border);
-      padding-bottom: 0.5rem;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
     }
 
-    .tab {
-      padding: 0.6rem 1.2rem;
+    .stat-icon svg { width: 20px; height: 20px; }
+
+    .stat-body { flex: 1; min-width: 0; }
+
+    .stat-count {
+      font-size: 1.55rem;
+      font-weight: 700;
+      line-height: 1.1;
+      margin-bottom: 0.15rem;
+    }
+
+    .stat-label {
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 0.18rem;
+    }
+
+    .stat-desc {
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      line-height: 1.3;
+    }
+
+    .stat-corner {
+      position: absolute;
+      top: 0.8rem;
+      right: 0.85rem;
+      opacity: 0.25;
+    }
+
+    .stat-corner svg { width: 18px; height: 18px; }
+
+    /* card accent colours */
+    .card-followers .stat-icon { background: rgba(63,185,80,0.15); }
+    .card-followers .stat-icon svg { stroke: var(--green); fill: none; }
+    .card-followers .stat-count { color: var(--green); }
+    .card-followers .stat-corner svg { stroke: var(--green); fill: none; }
+
+    .card-following .stat-icon { background: rgba(79,142,247,0.15); }
+    .card-following .stat-icon svg { stroke: var(--accent); fill: none; }
+    .card-following .stat-count { color: var(--accent); }
+    .card-following .stat-corner svg { stroke: var(--accent); fill: none; }
+
+    .card-forks .stat-icon { background: rgba(163,113,247,0.15); }
+    .card-forks .stat-icon svg { stroke: var(--purple); fill: none; }
+    .card-forks .stat-count { color: var(--purple); }
+    .card-forks .stat-corner svg { stroke: var(--purple); fill: none; }
+
+    .card-stars .stat-icon { background: rgba(227,179,65,0.15); }
+    .card-stars .stat-icon svg { stroke: var(--gold); fill: var(--gold); }
+    .card-stars .stat-count { color: var(--gold); }
+    .card-stars .stat-corner svg { stroke: var(--gold); fill: none; }
+
+    .card-notfollowback .stat-icon { background: rgba(247,120,186,0.15); }
+    .card-notfollowback .stat-icon svg { stroke: var(--pink); fill: none; }
+    .card-notfollowback .stat-count { color: var(--pink); }
+    .card-notfollowback .stat-corner svg { stroke: var(--pink); fill: none; }
+
+    .card-unfollowers .stat-icon { background: rgba(248,81,73,0.15); }
+    .card-unfollowers .stat-icon svg { stroke: var(--red); fill: none; }
+    .card-unfollowers .stat-count { color: var(--red); }
+    .card-unfollowers .stat-corner svg { stroke: var(--red); fill: none; }
+
+    .card-unforks .stat-icon { background: rgba(210,153,34,0.15); }
+    .card-unforks .stat-icon svg { stroke: var(--orange); fill: none; }
+    .card-unforks .stat-count { color: var(--orange); }
+    .card-unforks .stat-corner svg { stroke: var(--orange); fill: none; }
+
+    .card-unstars .stat-icon { background: rgba(57,211,195,0.15); }
+    .card-unstars .stat-icon svg { stroke: var(--teal); fill: none; }
+    .card-unstars .stat-count { color: var(--teal); }
+    .card-unstars .stat-corner svg { stroke: var(--teal); fill: none; }
+
+    /* ── TABS ── */
+    .tab-bar {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 0.45rem 0.5rem;
+      display: flex;
+      gap: 0.3rem;
+      margin-bottom: 1rem;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+
+    .tab-bar::-webkit-scrollbar { display: none; }
+
+    .tab-btn {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.45rem 0.9rem;
       background: transparent;
       color: var(--text-muted);
-      border: 1px solid transparent;
-      border-radius: 8px;
+      border: none;
+      border-radius: 7px;
       cursor: pointer;
-      font-size: 0.9rem;
-      transition: all 0.2s;
+      font-size: 0.82rem;
+      font-weight: 500;
+      white-space: nowrap;
+      transition: all 0.18s;
     }
 
-    .tab:hover { color: var(--text); background: var(--surface); }
+    .tab-btn svg {
+      width: 14px;
+      height: 14px;
+      stroke: currentColor;
+      fill: none;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
 
-    .tab.active {
+    .tab-btn:hover {
       color: var(--text);
-      background: var(--surface);
-      border-color: var(--border);
+      background: var(--surface-2);
     }
 
+    .tab-btn.active {
+      background: var(--accent);
+      color: #fff;
+    }
+
+    .tab-btn.active svg { stroke: #fff; }
+
+    /* ── SEARCH + FILTER BAR ── */
+    .search-bar {
+      display: flex;
+      gap: 0.6rem;
+      margin-bottom: 1rem;
+      align-items: center;
+    }
+
+    .search-wrap {
+      flex: 1;
+      position: relative;
+    }
+
+    .search-wrap svg {
+      position: absolute;
+      left: 0.85rem;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 15px;
+      height: 15px;
+      stroke: var(--text-muted);
+      fill: none;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      pointer-events: none;
+    }
+
+    .search-input {
+      width: 100%;
+      padding: 0.6rem 1rem 0.6rem 2.4rem;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text);
+      font-size: 0.88rem;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .search-input:focus { border-color: var(--accent); }
+    .search-input::placeholder { color: var(--text-muted); }
+
+    .filter-btn {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.6rem 1rem;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text-muted);
+      font-size: 0.82rem;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: border-color 0.2s;
+    }
+
+    .filter-btn:hover { border-color: #444c56; color: var(--text); }
+
+    .filter-btn svg {
+      width: 14px;
+      height: 14px;
+      stroke: currentColor;
+      fill: none;
+      stroke-width: 2;
+      stroke-linecap: round;
+    }
+
+    /* ── TAB PANELS ── */
     .tab-content { display: none; }
     .tab-content.active { display: block; }
 
+    /* ── USER GRID ── */
     .user-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-      gap: 0.75rem;
+      grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+      gap: 0.6rem;
     }
 
     .user-card {
       display: flex;
       align-items: center;
-      gap: 0.75rem;
+      gap: 0.7rem;
       background: var(--surface);
       border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 0.75rem 1rem;
+      border-radius: 9px;
+      padding: 0.65rem 0.85rem;
       text-decoration: none;
       color: var(--text);
-      transition: all 0.2s;
+      transition: all 0.18s;
     }
 
     .user-card:hover {
-      background: var(--surface-hover);
+      background: var(--surface-2);
       border-color: var(--accent);
-      transform: translateX(4px);
     }
 
     .user-card img {
-      width: 40px;
-      height: 40px;
+      width: 36px;
+      height: 36px;
       border-radius: 50%;
       border: 2px solid var(--border);
+      flex-shrink: 0;
     }
 
     .user-card .info { flex: 1; min-width: 0; }
 
     .user-card .username {
       font-weight: 600;
-      font-size: 0.95rem;
+      font-size: 0.88rem;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
@@ -169,311 +481,790 @@
 
     .user-card .date {
       color: var(--text-muted);
-      font-size: 0.75rem;
-      margin-top: 0.15rem;
+      font-size: 0.7rem;
+      margin-top: 0.1rem;
     }
 
     .user-card .badge {
-      font-size: 0.7rem;
-      padding: 0.15rem 0.5rem;
+      font-size: 0.65rem;
+      padding: 0.12rem 0.45rem;
       border-radius: 999px;
       font-weight: 600;
       flex-shrink: 0;
     }
 
     .badge.lost { background: rgba(248,81,73,0.15); color: var(--red); }
-    .badge.fork { background: rgba(188,140,255,0.15); color: var(--purple); }
+    .badge.fork { background: rgba(163,113,247,0.15); color: var(--purple); }
     .badge.unfork { background: rgba(210,153,34,0.15); color: var(--orange); }
-    .badge.star { background: rgba(227,179,65,0.15); color: #e3b341; }
-    .badge.unstar { background: rgba(210,153,34,0.15); color: var(--orange); }
-    .badge.notfollowback { background: rgba(247, 120, 186, 0.15); color: #f778ba; }
+    .badge.star { background: rgba(227,179,65,0.15); color: var(--gold); }
+    .badge.unstar { background: rgba(57,211,195,0.15); color: var(--teal); }
+    .badge.notfollowback { background: rgba(247,120,186,0.15); color: var(--pink); }
 
+    /* ── EMPTY STATE ── */
     .empty-state {
+      grid-column: 1 / -1;
       text-align: center;
-      padding: 3rem;
+      padding: 3.5rem 1rem;
       color: var(--text-muted);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.6rem;
     }
 
-    .empty-state .emoji { font-size: 2.5rem; margin-bottom: 0.5rem; }
-
-    .loading {
-      text-align: center;
-      padding: 3rem;
-      color: var(--text-muted);
+    .empty-octocat {
+      width: 160px;
+      height: 152px;
+      margin-bottom: 0.4rem;
+      opacity: 0.9;
     }
 
-    .loading::after {
+    .empty-state h3 {
+      font-size: 1rem;
+      color: var(--text);
+      font-weight: 600;
+    }
+
+    .empty-state p {
+      font-size: 0.82rem;
+      max-width: 320px;
+    }
+
+    .empty-state .btn-sync-sm {
+      margin-top: 0.3rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 0.5rem 1.1rem;
+      font-size: 0.82rem;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      transition: background 0.2s;
+    }
+
+    .empty-state .btn-sync-sm:hover { background: var(--accent-hover); }
+
+    .empty-state .btn-sync-sm svg {
+      width: 13px; height: 13px;
+      fill: none; stroke: #fff;
+      stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round;
+    }
+
+    /* ── GREEN STATUS DOT — pulse ring ── */
+    .dot {
+      position: relative;
+    }
+
+    .dot::after {
       content: '';
+      position: absolute;
+      inset: -3px;
+      border-radius: 50%;
+      border: 2px solid var(--green);
+      opacity: 0;
+      animation: dot-pulse 2s ease-out infinite;
+    }
+
+    @keyframes dot-pulse {
+      0%   { opacity: 0.8; transform: scale(1); }
+      70%  { opacity: 0;   transform: scale(2.2); }
+      100% { opacity: 0;   transform: scale(2.2); }
+    }
+
+    /* ── RUNNING indicator blink ── */
+    .running {
+      animation: running-blink 1.8s ease-in-out infinite;
+    }
+
+    @keyframes running-blink {
+      0%, 100% { opacity: 1; }
+      50%      { opacity: 0.4; }
+    }
+
+    /* ── SYNC BUTTON — spin icon on hover ── */
+    .btn-sync:hover svg,
+    .btn-sync-sm:hover svg {
+      animation: sync-spin 0.7s linear infinite;
+    }
+
+    @keyframes sync-spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* sparkle decoration */
+    .sparkle-wrap {
+      position: relative;
       display: inline-block;
-      width: 20px;
-      height: 20px;
+    }
+
+    .sparkle {
+      position: absolute;
+      font-size: 0.9rem;
+      opacity: 0.6;
+      animation: twinkle 2s ease-in-out infinite;
+      pointer-events: none;
+    }
+
+    /* sparkles positioned around the octocat */
+    .sparkle:nth-child(1) { top: -18px;  left: 10px;   animation-delay: 0s;    font-size: 1rem; }
+    .sparkle:nth-child(2) { top: -10px;  right: 8px;   animation-delay: 0.55s; font-size: 0.75rem; }
+    .sparkle:nth-child(3) { bottom: 30px; left: -8px;  animation-delay: 1.1s;  font-size: 0.85rem; }
+    .sparkle:nth-child(4) { bottom: 20px; right: -6px; animation-delay: 1.65s; font-size: 0.65rem; }
+    .sparkle:nth-child(5) { top: 20px;   left: -14px;  animation-delay: 0.3s;  font-size: 0.7rem; }
+    .sparkle:nth-child(6) { top: 15px;   right: -12px; animation-delay: 0.9s;  font-size: 0.8rem; }
+
+    @keyframes twinkle {
+      0%, 100% { opacity: 0.15; transform: scale(0.7) rotate(0deg); }
+      50%       { opacity: 1;   transform: scale(1.2) rotate(20deg); }
+    }
+
+    /* ── LOADING ── */
+    .loading {
+      grid-column: 1 / -1;
+      text-align: center;
+      padding: 3rem;
+      color: var(--text-muted);
+      font-size: 0.85rem;
+    }
+
+    .spinner {
+      display: inline-block;
+      width: 18px;
+      height: 18px;
       border: 2px solid var(--border);
       border-top-color: var(--accent);
       border-radius: 50%;
-      animation: spin 0.8s linear infinite;
-      margin-left: 0.5rem;
+      animation: spin 0.75s linear infinite;
+      margin-right: 0.5rem;
       vertical-align: middle;
     }
 
     @keyframes spin { to { transform: rotate(360deg); } }
 
-    .search-box {
-      width: 100%;
-      padding: 0.7rem 1rem;
+    /* ── FOOTER ── */
+    footer {
       background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      color: var(--text);
-      font-size: 0.9rem;
-      margin-bottom: 1rem;
-      outline: none;
-      transition: border-color 0.2s;
+      border-top: 1px solid var(--border);
+      padding: 0.65rem 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      flex-wrap: wrap;
     }
 
-    .search-box:focus { border-color: var(--accent); }
-    .search-box::placeholder { color: var(--text-muted); }
-
-    .repo-link {
-      display: inline-flex;
+    footer .footer-item {
+      display: flex;
       align-items: center;
-      gap: 0.3rem;
+      gap: 0.4rem;
+    }
+
+    footer .footer-item svg {
+      width: 14px; height: 14px;
+      stroke: currentColor; fill: none;
+      stroke-width: 1.8; stroke-linecap: round;
+    }
+
+    footer a {
       color: var(--accent);
       text-decoration: none;
-      font-size: 0.85rem;
     }
 
-    .repo-link:hover { text-decoration: underline; }
+    footer a:hover { text-decoration: underline; }
 
-    footer {
-      text-align: center;
-      margin-top: 3rem;
-      padding-top: 1.5rem;
-      border-top: 1px solid var(--border);
-      color: var(--text-muted);
-      font-size: 0.8rem;
+    footer .gh-mini {
+      width: 14px; height: 14px;
+      background: var(--text-muted);
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
     }
 
-    @media (max-width: 600px) {
-      body { padding: 1rem; }
-      header h1 { font-size: 1.5rem; }
+    footer .gh-mini svg { width: 10px; height: 10px; fill: var(--surface); }
+
+    footer .sep { color: var(--border); }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 900px) {
+      .stats-grid { grid-template-columns: repeat(3, 1fr); }
+      .stats-row2 { grid-template-columns: repeat(3, 1fr); }
+    }
+
+    @media (max-width: 640px) {
+      .main { padding: 1rem; }
+      .navbar { padding: 0 1rem; }
       .stats-grid { grid-template-columns: repeat(2, 1fr); }
-      .user-grid { grid-template-columns: 1fr; }
+      .stats-row2 { grid-template-columns: repeat(2, 1fr); }
+      .navbar-right .actions-status { display: none; }
+      .navbar-right .status-pill { display: none; }
+      footer { gap: 0.75rem; }
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <header>
-      <h1>📊 GitHub Tracker</h1>
-      <p class="subtitle">Tracking followers, forks & more</p>
-      <p class="last-updated" id="lastUpdated">Loading...</p>
-    </header>
 
-    <div class="stats-grid" id="statsGrid">
-      <div class="stat-card followers">
-        <span class="number" id="followersCount">-</span>
-        <span class="label">Followers</span>
+  <!-- ── NAVBAR ── -->
+  <nav class="navbar">
+    <div class="navbar-left">
+      <!-- GitHub logo -->
+      <div class="navbar-logo">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61-.546-1.385-1.335-1.755-1.335-1.755-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/>
+        </svg>
       </div>
-      <div class="stat-card following">
-        <span class="number" id="followingCount">-</span>
-        <span class="label">Following</span>
-      </div>
-      <div class="stat-card forks">
-        <span class="number" id="forksCount">-</span>
-        <span class="label">Forks</span>
-      </div>
-      <div class="stat-card stars">
-        <span class="number" id="starsCount">-</span>
-        <span class="label">Stars</span>
-      </div>
-      <div class="stat-card notfollowback">
-        <span class="number" id="notFollowBackCount">-</span>
-        <span class="label">Don't Follow Back</span>
-      </div>
-      <div class="stat-card unfollowers">
-        <span class="number" id="unfollowersCount">-</span>
-        <span class="label">Unfollowers</span>
-      </div>
-      <div class="stat-card unforks">
-        <span class="number" id="unforksCount">-</span>
-        <span class="label">Unforks</span>
-      </div>
-      <div class="stat-card unstars">
-        <span class="number" id="unstarsCount">-</span>
-        <span class="label">Unstars</span>
+      <div class="navbar-brand">
+        <h1>GitHub <span>Tracker</span></h1>
+        <p>Tracking followers, forks &amp; more</p>
       </div>
     </div>
 
-    <div class="tabs" id="tabs">
-      <button class="tab active" data-tab="followers">👥 Followers</button>
-      <button class="tab" data-tab="following">➡️ Following</button>
-      <button class="tab" data-tab="notfollowback">🚫 Don't Follow Back</button>
-      <button class="tab" data-tab="unfollowers">💔 Unfollowers</button>
-      <button class="tab" data-tab="forks">🍴 Forks</button>
-      <button class="tab" data-tab="unforks">🗑️ Unforks</button>
-      <button class="tab" data-tab="stars">⭐ Stars</button>
-      <button class="tab" data-tab="unstars">💫 Unstars</button>
+    <div class="navbar-right">
+      <!-- Last updated -->
+      <div class="status-pill">
+        <div class="dot"></div>
+        <div class="status-block">
+          <span class="label-main">Last updated</span>
+          <span class="label-sub" id="lastUpdatedLabel">Just now</span>
+        </div>
+      </div>
+
+      <!-- GitHub Actions status -->
+      <div class="actions-status">
+        <div class="gh-icon">
+          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61-.546-1.385-1.335-1.755-1.335-1.755-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/>
+          </svg>
+        </div>
+        <div class="status-block">
+          <span class="label-main">GitHub Actions &nbsp;<span class="running">● Running</span></span>
+          <span class="label-sub">Data refreshes every 15 minutes</span>
+        </div>
+      </div>
+
+      <!-- Sync button -->
+      <a class="btn-sync" href="https://github.com/KanishJebaMathewM/Truxify/actions" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24"><path d="M1 4v6h6"/><path d="M23 20v-6h-6"/><path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4-4.64 4.36A9 9 0 0 1 3.51 15"/></svg>
+        Sync Data
+      </a>
+    </div>
+  </nav>
+
+  <!-- ── MAIN ── -->
+  <main class="main">
+
+    <!-- Stat cards row 1 (5 cards) -->
+    <div class="stats-grid">
+
+      <div class="stat-card card-followers">
+        <div class="stat-icon">
+          <!-- person icon -->
+          <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/>
+            <path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+          </svg>
+        </div>
+        <div class="stat-body">
+          <div class="stat-count" id="followersCount">0</div>
+          <div class="stat-label">Followers</div>
+          <div class="stat-desc">People who follow you</div>
+        </div>
+        <div class="stat-corner">
+          <svg viewBox="0 0 24 24" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/>
+            <path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+          </svg>
+        </div>
+      </div>
+
+      <div class="stat-card card-following">
+        <div class="stat-icon">
+          <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
+          </svg>
+        </div>
+        <div class="stat-body">
+          <div class="stat-count" id="followingCount">0</div>
+          <div class="stat-label">Following</div>
+          <div class="stat-desc">People you follow</div>
+        </div>
+        <div class="stat-corner">
+          <svg viewBox="0 0 24 24" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
+          </svg>
+        </div>
+      </div>
+
+      <div class="stat-card card-forks">
+        <div class="stat-icon">
+          <!-- git-branch / fork icon -->
+          <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="18" cy="18" r="3"/><circle cx="6" cy="6" r="3"/><circle cx="6" cy="18" r="3"/>
+            <path d="M6 9v3a3 3 0 0 0 3 3h4.5"/><line x1="18" y1="9" x2="18" y2="15"/>
+          </svg>
+        </div>
+        <div class="stat-body">
+          <div class="stat-count" id="forksCount">0</div>
+          <div class="stat-label">Forks</div>
+          <div class="stat-desc">Times your repo was forked</div>
+        </div>
+        <div class="stat-corner">
+          <svg viewBox="0 0 24 24" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="18" cy="18" r="3"/><circle cx="6" cy="6" r="3"/><circle cx="6" cy="18" r="3"/>
+            <path d="M6 9v3a3 3 0 0 0 3 3h4.5"/><line x1="18" y1="9" x2="18" y2="15"/>
+          </svg>
+        </div>
+      </div>
+
+      <div class="stat-card card-stars">
+        <div class="stat-icon">
+          <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+          </svg>
+        </div>
+        <div class="stat-body">
+          <div class="stat-count" id="starsCount">0</div>
+          <div class="stat-label">Stars</div>
+          <div class="stat-desc">Stars on your repository</div>
+        </div>
+        <div class="stat-corner">
+          <svg viewBox="0 0 24 24" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+          </svg>
+        </div>
+      </div>
+
+      <div class="stat-card card-notfollowback">
+        <div class="stat-icon">
+          <!-- user-x -->
+          <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/>
+            <line x1="18" y1="8" x2="23" y2="13"/><line x1="23" y1="8" x2="18" y2="13"/>
+          </svg>
+        </div>
+        <div class="stat-body">
+          <div class="stat-count" id="notFollowBackCount">0</div>
+          <div class="stat-label">Don't Follow Back</div>
+          <div class="stat-desc">People you follow who don't follow back</div>
+        </div>
+        <div class="stat-corner">
+          <svg viewBox="0 0 24 24" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/>
+            <line x1="18" y1="8" x2="23" y2="13"/><line x1="23" y1="8" x2="18" y2="13"/>
+          </svg>
+        </div>
+      </div>
+
     </div>
 
-    <input type="text" class="search-box" id="searchBox" placeholder="Search users...">
+    <!-- Stat cards row 2 (3 cards) -->
+    <div class="stats-row2">
 
+      <div class="stat-card card-unfollowers">
+        <div class="stat-icon">
+          <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/>
+            <line x1="17" y1="11" x2="22" y2="11"/>
+          </svg>
+        </div>
+        <div class="stat-body">
+          <div class="stat-count" id="unfollowersCount">0</div>
+          <div class="stat-label">Unfollowers</div>
+          <div class="stat-desc">People who unfollowed you</div>
+        </div>
+        <div class="stat-corner">
+          <svg viewBox="0 0 24 24" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/>
+            <line x1="17" y1="11" x2="22" y2="11"/>
+          </svg>
+        </div>
+      </div>
+
+      <div class="stat-card card-unforks">
+        <div class="stat-icon">
+          <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="18" cy="18" r="3"/><circle cx="6" cy="6" r="3"/><circle cx="6" cy="18" r="3"/>
+            <path d="M6 9v3a3 3 0 0 0 3 3h4.5"/>
+            <line x1="16" y1="9" x2="20" y2="13"/><line x1="20" y1="9" x2="16" y2="13"/>
+          </svg>
+        </div>
+        <div class="stat-body">
+          <div class="stat-count" id="unforksCount">0</div>
+          <div class="stat-label">Unforks</div>
+          <div class="stat-desc">Users who removed their fork</div>
+        </div>
+        <div class="stat-corner">
+          <svg viewBox="0 0 24 24" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="18" cy="18" r="3"/><circle cx="6" cy="6" r="3"/><circle cx="6" cy="18" r="3"/>
+            <path d="M6 9v3a3 3 0 0 0 3 3h4.5"/>
+            <line x1="16" y1="9" x2="20" y2="13"/><line x1="20" y1="9" x2="16" y2="13"/>
+          </svg>
+        </div>
+      </div>
+
+      <div class="stat-card card-unstars">
+        <div class="stat-icon">
+          <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+            <line x1="9" y1="9" x2="15" y2="15"/><line x1="15" y1="9" x2="9" y2="15"/>
+          </svg>
+        </div>
+        <div class="stat-body">
+          <div class="stat-count" id="unstarsCount">0</div>
+          <div class="stat-label">Unstars</div>
+          <div class="stat-desc">Users who removed their star</div>
+        </div>
+        <div class="stat-corner">
+          <svg viewBox="0 0 24 24" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+          </svg>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Tab bar -->
+    <div class="tab-bar" id="tabBar">
+      <button class="tab-btn active" data-tab="followers">
+        <!-- users icon -->
+        <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        Followers
+      </button>
+      <button class="tab-btn" data-tab="following">
+        <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        Following
+      </button>
+      <button class="tab-btn" data-tab="notfollowback">
+        <svg viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="18" y1="8" x2="23" y2="13"/><line x1="23" y1="8" x2="18" y2="13"/></svg>
+        Don't Follow Back
+      </button>
+      <button class="tab-btn" data-tab="unfollowers">
+        <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="17" y1="11" x2="22" y2="11"/></svg>
+        Unfollowers
+      </button>
+      <button class="tab-btn" data-tab="forks">
+        <svg viewBox="0 0 24 24"><circle cx="18" cy="18" r="3"/><circle cx="6" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><path d="M6 9v3a3 3 0 0 0 3 3h4.5"/><line x1="18" y1="9" x2="18" y2="15"/></svg>
+        Forks
+      </button>
+      <button class="tab-btn" data-tab="unforks">
+        <svg viewBox="0 0 24 24"><circle cx="18" cy="18" r="3"/><circle cx="6" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><path d="M6 9v3a3 3 0 0 0 3 3h4.5"/><line x1="16" y1="9" x2="20" y2="13"/><line x1="20" y1="9" x2="16" y2="13"/></svg>
+        Unforks
+      </button>
+      <button class="tab-btn" data-tab="stars">
+        <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+        Stars
+      </button>
+      <button class="tab-btn" data-tab="unstars">
+        <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/><line x1="9" y1="9" x2="15" y2="15"/><line x1="15" y1="9" x2="9" y2="15"/></svg>
+        Unstars
+      </button>
+    </div>
+
+    <!-- Search + filter -->
+    <div class="search-bar">
+      <div class="search-wrap">
+        <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input type="text" class="search-input" id="searchBox" placeholder="Search users...">
+      </div>
+      <button class="filter-btn" id="filterBtn">
+        <svg viewBox="0 0 24 24"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
+        All users
+        <svg viewBox="0 0 24 24" style="margin-left:2px"><polyline points="6 9 12 15 18 9"/></svg>
+      </button>
+    </div>
+
+    <!-- Tab contents -->
     <div id="tabFollowers" class="tab-content active">
-      <div class="loading" id="loadingFollowers">Loading followers</div>
-      <div class="user-grid" id="gridFollowers"></div>
+      <div class="user-grid" id="gridFollowers">
+        <div class="loading"><span class="spinner"></span>Loading followers</div>
+      </div>
     </div>
 
     <div id="tabFollowing" class="tab-content">
-      <div class="loading" id="loadingFollowing">Loading following</div>
-      <div class="user-grid" id="gridFollowing"></div>
-    </div>
-
-    <div id="tabUnfollowers" class="tab-content">
-      <div class="loading" id="loadingUnfollowers">Loading unfollowers</div>
-      <div class="user-grid" id="gridUnfollowers"></div>
+      <div class="user-grid" id="gridFollowing">
+        <div class="loading"><span class="spinner"></span>Loading following</div>
+      </div>
     </div>
 
     <div id="tabNotfollowback" class="tab-content">
-      <div class="loading" id="loadingNotfollowback">Loading users</div>
-      <div class="user-grid" id="gridNotfollowback"></div>
+      <div class="user-grid" id="gridNotfollowback">
+        <div class="loading"><span class="spinner"></span>Loading data</div>
+      </div>
+    </div>
+
+    <div id="tabUnfollowers" class="tab-content">
+      <div class="user-grid" id="gridUnfollowers">
+        <div class="loading"><span class="spinner"></span>Loading unfollowers</div>
+      </div>
     </div>
 
     <div id="tabForks" class="tab-content">
-      <div class="loading" id="loadingForks">Loading forks</div>
-      <div class="user-grid" id="gridForks"></div>
+      <div class="user-grid" id="gridForks">
+        <div class="loading"><span class="spinner"></span>Loading forks</div>
+      </div>
     </div>
 
     <div id="tabUnforks" class="tab-content">
-      <div class="loading" id="loadingUnforks">Loading unforks</div>
-      <div class="user-grid" id="gridUnforks"></div>
+      <div class="user-grid" id="gridUnforks">
+        <div class="loading"><span class="spinner"></span>Loading unforks</div>
+      </div>
     </div>
 
     <div id="tabStars" class="tab-content">
-      <div class="loading" id="loadingStars">Loading stars</div>
-      <div class="user-grid" id="gridStars"></div>
+      <div class="user-grid" id="gridStars">
+        <div class="loading"><span class="spinner"></span>Loading stars</div>
+      </div>
     </div>
 
     <div id="tabUnstars" class="tab-content">
-      <div class="loading" id="loadingUnstars">Loading unstars</div>
-      <div class="user-grid" id="gridUnstars"></div>
+      <div class="user-grid" id="gridUnstars">
+        <div class="loading"><span class="spinner"></span>Loading unstars</div>
+      </div>
     </div>
 
-    <footer>
-      <p>Powered by GitHub Actions &bull; Data refreshed every 15 minutes</p>
-      <p style="margin-top: 0.3rem;">Tracking repo: <a class="repo-link" id="repoLink" href="#">-</a></p>
-    </footer>
-  </div>
+  </main>
+
+  <!-- ── FOOTER ── -->
+  <footer>
+    <div class="footer-item">
+      <svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+      Tracking repository:
+      <span class="gh-mini">
+        <svg viewBox="0 0 24 24"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61-.546-1.385-1.335-1.755-1.335-1.755-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>
+      </span>
+      <a id="repoLink" href="https://github.com/KanishJebaMathewM/Truxify" target="_blank" rel="noopener">KanishJebaMathewM/Truxify</a>
+    </div>
+    <span class="sep">·</span>
+    <div class="footer-item">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14"/></svg>
+      Powered by <a href="https://github.com/features/actions" target="_blank" rel="noopener">GitHub Actions</a>
+    </div>
+    <span class="sep">·</span>
+    <div class="footer-item">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+      Data refreshed every 15 minutes
+    </div>
+    <span class="sep">·</span>
+    <div class="footer-item">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+      Last updated: <span id="footerUpdated">Just now</span>
+    </div>
+  </footer>
 
   <script>
     const BASE = '.';
-    let allData = {};
 
     async function fetchJSON(file) {
       try {
-        const resp = await fetch(`${BASE}/data/${file}?t=${Date.now()}`);
-        if (!resp.ok) return null;
-        return await resp.json();
+        const r = await fetch(`${BASE}/data/${file}?t=${Date.now()}`);
+        if (!r.ok) return null;
+        return await r.json();
       } catch { return null; }
     }
 
     function formatDate(iso) {
+      if (!iso) return 'Just now';
+      const d = new Date(iso);
+      const now = new Date();
+      const diff = Math.floor((now - d) / 1000);
+      if (diff < 60) return 'Just now';
+      if (diff < 3600) return `${Math.floor(diff / 60)}m ago`;
+      if (diff < 86400) return `${Math.floor(diff / 3600)}h ago`;
+      return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+    }
+
+    function formatDateFull(iso) {
       if (!iso) return '';
       const d = new Date(iso);
-      return d.toLocaleDateString('en-US', {
-        year: 'numeric', month: 'short', day: 'numeric',
-        hour: '2-digit', minute: '2-digit'
-      });
+      return d.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
     }
 
-    function createUserCard(user, opts = {}) {
-      const a = document.createElement('a');
-      a.className = 'user-card';
-      a.href = user.html_url || `https://github.com/${user.username || user.owner}`;
-      a.target = '_blank';
-      a.rel = 'noopener';
-
-      const name = user.username || user.owner;
-      const avatar = user.avatar_url || `https://github.com/${name}.png?size=80`;
-
-      let dateHTML = '';
-      if (user.date) {
-        dateHTML = `<div class="date">${formatDate(user.date)}</div>`;
-      } else if (user.starred_at) {
-        dateHTML = `<div class="date">Starred: ${formatDate(user.starred_at)}</div>`;
-      } else if (user.created_at) {
-        dateHTML = `<div class="date">Forked: ${formatDate(user.created_at)}</div>`;
-      }
-
-      let badgeHTML = '';
-      if (opts.badge) {
-        badgeHTML = `<span class="badge ${opts.badgeClass || ''}">${opts.badge}</span>`;
-      }
-
-      a.innerHTML = `
-        <img src="${avatar}" alt="${name}" loading="lazy">
-        <div class="info">
-          <div class="username">${name}</div>
-          ${dateHTML}
-        </div>
-        ${badgeHTML}
-      `;
-
-      a.dataset.name = name.toLowerCase();
-      return a;
-    }
-
-    function renderGrid(gridId, loadingId, items, opts = {}) {
-      const grid = document.getElementById(gridId);
-      const loading = document.getElementById(loadingId);
-      loading.style.display = 'none';
-
-      if (!items || items.length === 0) {
-        grid.innerHTML = `
-          <div class="empty-state" style="grid-column: 1/-1;">
-            <div class="emoji">${opts.emptyEmoji || '📭'}</div>
-            <p>${opts.emptyText || 'No data yet'}</p>
-          </div>
-        `;
-        return;
-      }
-
-      grid.innerHTML = '';
-      // Show newest first for history lists
-      const sorted = opts.reverse ? [...items].reverse() : items;
-      sorted.forEach(user => {
-        grid.appendChild(createUserCard(user, opts));
-      });
-    }
-
+    // ── TABS ──
     function setupTabs() {
-      const tabs = document.querySelectorAll('.tab');
-      tabs.forEach(tab => {
-        tab.addEventListener('click', () => {
-          tabs.forEach(t => t.classList.remove('active'));
-          tab.classList.add('active');
+      document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          const tab = btn.dataset.tab;
           document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-          const target = tab.dataset.tab;
-          document.getElementById(`tab${target.charAt(0).toUpperCase() + target.slice(1)}`).classList.add('active');
+          const panel = document.getElementById(`tab${tab.charAt(0).toUpperCase() + tab.slice(1)}`);
+          if (panel) panel.classList.add('active');
           document.getElementById('searchBox').value = '';
           filterCards('');
         });
       });
     }
 
-    function filterCards(query) {
-      const q = query.toLowerCase().trim();
+    function filterCards(q) {
+      const lq = q.toLowerCase().trim();
       document.querySelectorAll('.user-card').forEach(card => {
-        card.style.display = !q || card.dataset.name.includes(q) ? '' : 'none';
+        card.style.display = (!lq || card.dataset.name.includes(lq)) ? '' : 'none';
       });
     }
 
+    // ── RENDER USER CARD ──
+    function createUserCard(user, opts = {}) {
+      const a = document.createElement('a');
+      a.className = 'user-card';
+      const name = user.username || user.owner || user.login || '';
+      a.href = user.html_url || `https://github.com/${name}`;
+      a.target = '_blank';
+      a.rel = 'noopener';
+      a.dataset.name = name.toLowerCase();
+
+      const avatar = user.avatar_url || `https://github.com/${name}.png?size=80`;
+
+      let dateText = '';
+      if (user.date) dateText = formatDateFull(user.date);
+      else if (user.starred_at) dateText = 'Starred: ' + formatDateFull(user.starred_at);
+      else if (user.created_at) dateText = 'Forked: ' + formatDateFull(user.created_at);
+
+      a.innerHTML = `
+        <img src="${avatar}" alt="${name}" loading="lazy">
+        <div class="info">
+          <div class="username">${name}</div>
+          ${dateText ? `<div class="date">${dateText}</div>` : ''}
+        </div>
+        ${opts.badge ? `<span class="badge ${opts.badgeClass || ''}">${opts.badge}</span>` : ''}
+      `;
+      return a;
+    }
+
+    // ── RENDER GRID ──
+    function renderGrid(gridId, items, opts = {}) {
+      const grid = document.getElementById(gridId);
+      grid.innerHTML = '';
+
+      if (!items || items.length === 0) {
+        grid.innerHTML = `
+          <div class="empty-state">
+            <div class="sparkle-wrap">
+              <span class="sparkle">✦</span>
+              <span class="sparkle">✦</span>
+              <span class="sparkle">✦</span>
+              <span class="sparkle">✦</span>
+              <span class="sparkle">✦</span>
+              <span class="sparkle">✦</span>
+              <!-- Octocat with telescope — detailed SVG matching screenshot -->
+              <svg class="empty-octocat" viewBox="0 0 220 210" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <!-- shadow -->
+                <ellipse cx="98" cy="200" rx="55" ry="7" fill="#21262d" opacity="0.5"/>
+
+                <!-- TAIL (tentacle) -->
+                <path d="M88 158 Q72 172 68 185 Q64 196 72 196 Q80 196 82 188 Q84 180 94 174" stroke="#30363d" stroke-width="10" stroke-linecap="round" fill="none"/>
+                <ellipse cx="72" cy="196" rx="7" ry="5" fill="#3d444d"/>
+
+                <!-- BODY -->
+                <ellipse cx="98" cy="148" rx="36" ry="30" fill="#30363d"/>
+                <!-- belly -->
+                <ellipse cx="98" cy="152" rx="22" ry="18" fill="#3d444d"/>
+
+                <!-- LEFT ARM (reaching toward telescope) -->
+                <path d="M134 140 Q152 145 162 152" stroke="#30363d" stroke-width="11" stroke-linecap="round" fill="none"/>
+                <!-- right arm hanging -->
+                <path d="M62 140 Q50 155 52 168" stroke="#30363d" stroke-width="11" stroke-linecap="round" fill="none"/>
+                <!-- paws -->
+                <circle cx="162" cy="154" r="7" fill="#30363d"/>
+                <circle cx="52" cy="170" r="6" fill="#30363d"/>
+
+                <!-- LEGS -->
+                <path d="M80 175 Q76 185 74 195" stroke="#30363d" stroke-width="10" stroke-linecap="round" fill="none"/>
+                <path d="M116 175 Q120 185 122 195" stroke="#30363d" stroke-width="10" stroke-linecap="round" fill="none"/>
+                <ellipse cx="73" cy="196" rx="9" ry="5" fill="#30363d"/>
+                <ellipse cx="123" cy="196" rx="9" ry="5" fill="#30363d"/>
+
+                <!-- HEAD -->
+                <circle cx="98" cy="95" r="40" fill="#30363d"/>
+
+                <!-- EARS (cat ears) -->
+                <!-- left ear outer -->
+                <polygon points="64,78 56,50 80,68" fill="#30363d"/>
+                <!-- left ear inner -->
+                <polygon points="65,75 59,56 76,68" fill="#2a3038"/>
+                <!-- right ear outer -->
+                <polygon points="132,78 140,50 116,68" fill="#30363d"/>
+                <!-- right ear inner -->
+                <polygon points="131,75 137,56 120,68" fill="#2a3038"/>
+
+                <!-- FACE MASK (lighter oval) -->
+                <ellipse cx="98" cy="102" rx="28" ry="25" fill="#3d444d"/>
+
+                <!-- EYES -->
+                <!-- left eye white -->
+                <circle cx="87" cy="96" r="8" fill="#e6edf3"/>
+                <!-- right eye white -->
+                <circle cx="109" cy="96" r="8" fill="#e6edf3"/>
+                <!-- left pupil -->
+                <circle cx="88.5" cy="97" r="4.5" fill="#1c2129"/>
+                <!-- right pupil -->
+                <circle cx="110.5" cy="97" r="4.5" fill="#1c2129"/>
+                <!-- eye shine left -->
+                <circle cx="90" cy="94.5" r="1.8" fill="#fff" opacity="0.9"/>
+                <!-- eye shine right -->
+                <circle cx="112" cy="94.5" r="1.8" fill="#fff" opacity="0.9"/>
+
+                <!-- NOSE -->
+                <path d="M94 108 Q98 112 102 108 Q98 105 94 108Z" fill="#161b22" opacity="0.7"/>
+
+                <!-- MOUTH (subtle smile) -->
+                <path d="M93 113 Q98 118 103 113" stroke="#161b22" stroke-width="1.5" stroke-linecap="round" fill="none" opacity="0.5"/>
+
+                <!-- WHISKERS left -->
+                <line x1="62" y1="104" x2="84" y2="107" stroke="#8b949e" stroke-width="1.2" stroke-linecap="round" opacity="0.7"/>
+                <line x1="62" y1="110" x2="84" y2="110" stroke="#8b949e" stroke-width="1.2" stroke-linecap="round" opacity="0.7"/>
+                <!-- WHISKERS right -->
+                <line x1="112" y1="107" x2="134" y2="104" stroke="#8b949e" stroke-width="1.2" stroke-linecap="round" opacity="0.7"/>
+                <line x1="112" y1="110" x2="134" y2="110" stroke="#8b949e" stroke-width="1.2" stroke-linecap="round" opacity="0.7"/>
+
+                <!-- ── TELESCOPE ── -->
+                <!-- tripod legs -->
+                <line x1="178" y1="168" x2="162" y2="198" stroke="#444c56" stroke-width="2.5" stroke-linecap="round"/>
+                <line x1="178" y1="168" x2="180" y2="198" stroke="#444c56" stroke-width="2.5" stroke-linecap="round"/>
+                <line x1="178" y1="168" x2="196" y2="195" stroke="#444c56" stroke-width="2.5" stroke-linecap="round"/>
+                <!-- tripod cross -->
+                <line x1="166" y1="182" x2="192" y2="182" stroke="#444c56" stroke-width="2" stroke-linecap="round" opacity="0.6"/>
+
+                <!-- main tube body -->
+                <rect x="152" y="144" width="52" height="14" rx="7" fill="#444c56" transform="rotate(-28 152 144)"/>
+                <!-- narrower eyepiece end -->
+                <rect x="148" y="149" width="14" height="10" rx="5" fill="#3d444d" transform="rotate(-28 148 149)"/>
+                <!-- wider objective end -->
+                <rect x="188" y="128" width="18" height="14" rx="5" fill="#58a6ff" transform="rotate(-28 188 128)" opacity="0.9"/>
+                <!-- lens glass -->
+                <ellipse cx="200" cy="128" rx="7" ry="7" fill="#79c0ff" opacity="0.4" transform="rotate(-28 200 128)"/>
+                <!-- tube highlight -->
+                <rect x="158" y="143" width="36" height="4" rx="2" fill="#6e7681" transform="rotate(-28 158 143)" opacity="0.4"/>
+                <!-- mount knob -->
+                <circle cx="178" cy="166" r="5" fill="#444c56"/>
+                <circle cx="178" cy="166" r="3" fill="#3d444d"/>
+              </svg>
+            </div>
+            <h3>${opts.emptyTitle || 'No data yet'}</h3>
+            <p>${opts.emptyText || 'Run the workflow to sync your GitHub data and see it here!'}</p>
+            <a class="btn-sync-sm" href="https://github.com/KanishJebaMathewM/Truxify/actions" target="_blank" rel="noopener">
+              <svg viewBox="0 0 24 24"><path d="M1 4v6h6"/><path d="M23 20v-6h-6"/><path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4-4.64 4.36A9 9 0 0 1 3.51 15"/></svg>
+              Sync Data
+            </a>
+          </div>`;
+        return;
+      }
+
+      const sorted = opts.reverse ? [...items].reverse() : items;
+      sorted.forEach(user => grid.appendChild(createUserCard(user, opts)));
+    }
+
+    // ── INIT ──
     async function init() {
       setupTabs();
 
-      document.getElementById('searchBox').addEventListener('input', e => {
-        filterCards(e.target.value);
-      });
+      document.getElementById('searchBox').addEventListener('input', e => filterCards(e.target.value));
 
-      // Fetch all data in parallel
       const [snapshot, followers, following, unfollowers, forks, unforks, stars, unstars] = await Promise.all([
         fetchJSON('snapshot.json'),
         fetchJSON('followers.json'),
@@ -485,75 +1276,64 @@
         fetchJSON('unstars.json'),
       ]);
 
-      // Update stats
+      // Stats
       if (snapshot) {
-        document.getElementById('followersCount').textContent = snapshot.followers_count ?? 0;
-        document.getElementById('followingCount').textContent = snapshot.following_count ?? 0;
-        document.getElementById('forksCount').textContent = snapshot.forks_count ?? 0;
-        document.getElementById('starsCount').textContent = snapshot.stars_count ?? 0;
-        const duration = snapshot.run_duration_seconds;
-        const durationText = duration != null ? ` · Ran in ${duration}s` : '';
-        document.getElementById('lastUpdated').textContent = `Last updated: ${formatDate(snapshot.last_updated)}${durationText}`;
+        document.getElementById('followersCount').textContent  = snapshot.followers_count ?? 0;
+        document.getElementById('followingCount').textContent  = snapshot.following_count ?? 0;
+        document.getElementById('forksCount').textContent      = snapshot.forks_count ?? 0;
+        document.getElementById('starsCount').textContent      = snapshot.stars_count ?? 0;
+        const ts = formatDate(snapshot.last_updated);
+        document.getElementById('lastUpdatedLabel').textContent = ts;
+        document.getElementById('footerUpdated').textContent    = ts;
       }
 
       document.getElementById('unfollowersCount').textContent = unfollowers ? unfollowers.length : 0;
-      document.getElementById('unforksCount').textContent = unforks ? unforks.length : 0;
-      document.getElementById('unstarsCount').textContent = unstars ? unstars.length : 0;
+      document.getElementById('unforksCount').textContent     = unforks     ? unforks.length     : 0;
+      document.getElementById('unstarsCount').textContent     = unstars     ? unstars.length     : 0;
 
-      // Try to determine repo link from snapshot or forks
-      const repoLink = document.getElementById('repoLink');
-      if (forks && forks.length > 0 && forks[0].html_url) {
-        const parts = forks[0].html_url.split('/');
-        // fork url is like github.com/forker/repo, parent is the tracked repo
-        repoLink.textContent = 'KanishJebaMathewM/Truxify';
-        repoLink.href = 'https://github.com/KanishJebaMathewM/Truxify';
-      } else {
-        repoLink.textContent = 'KanishJebaMathewM/Truxify';
-        repoLink.href = 'https://github.com/KanishJebaMathewM/Truxify';
-      }
-
-      // Compute users who do not follow back
-      const followerSet = new Set((followers || []).map(u => (u.username || '').toLowerCase()));
-      const notFollowingBack = (following || []).filter(u => !followerSet.has((u.username || '').toLowerCase()));
+      // Don't follow back
+      const followerSet = new Set((followers || []).map(u => (u.username || u.login || '').toLowerCase()));
+      const notFollowingBack = (following || []).filter(u => !followerSet.has((u.username || u.login || '').toLowerCase()));
       document.getElementById('notFollowBackCount').textContent = notFollowingBack.length;
 
       // Render grids
-      renderGrid('gridFollowers', 'loadingFollowers', followers, {
-        emptyEmoji: '👥', emptyText: 'No followers data yet. Run the workflow first!'
+      renderGrid('gridFollowers', followers, {
+        emptyTitle: 'No follower data yet',
+        emptyText: 'Run the workflow to sync your GitHub data and see your followers here!'
       });
-
-      renderGrid('gridFollowing', 'loadingFollowing', following, {
-        emptyEmoji: '➡️', emptyText: 'No following data yet.'
+      renderGrid('gridFollowing', following, {
+        emptyTitle: 'No following data yet',
+        emptyText: 'Run the workflow to sync your GitHub data.'
       });
-
-      renderGrid('gridNotfollowback', 'loadingNotfollowback', notFollowingBack, {
+      renderGrid('gridNotfollowback', notFollowingBack, {
         badge: "Doesn't Follow Back", badgeClass: 'notfollowback',
-        emptyEmoji: '🤝', emptyText: 'Everyone you follow follows you back!'
+        emptyTitle: 'All good here!',
+        emptyText: 'Everyone you follow follows you back.'
       });
-
-      renderGrid('gridUnfollowers', 'loadingUnfollowers', unfollowers, {
+      renderGrid('gridUnfollowers', unfollowers, {
         badge: 'Unfollowed', badgeClass: 'lost', reverse: true,
-        emptyEmoji: '🎉', emptyText: 'No one has unfollowed you yet!'
+        emptyTitle: 'No unfollowers yet',
+        emptyText: 'No one has unfollowed you yet. Keep up the great work!'
       });
-
-      renderGrid('gridForks', 'loadingForks', forks, {
+      renderGrid('gridForks', forks, {
         badge: 'Fork', badgeClass: 'fork',
-        emptyEmoji: '🍴', emptyText: 'No forks yet.'
+        emptyTitle: 'No forks yet',
+        emptyText: 'Your repository has not been forked yet.'
       });
-
-      renderGrid('gridUnforks', 'loadingUnforks', unforks, {
+      renderGrid('gridUnforks', unforks, {
         badge: 'Removed', badgeClass: 'unfork', reverse: true,
-        emptyEmoji: '✨', emptyText: 'No unforks detected yet.'
+        emptyTitle: 'No unforks detected',
+        emptyText: 'No one has removed their fork yet.'
       });
-
-      renderGrid('gridStars', 'loadingStars', stars, {
+      renderGrid('gridStars', stars, {
         badge: 'Starred', badgeClass: 'star',
-        emptyEmoji: '⭐', emptyText: 'No stargazers yet.'
+        emptyTitle: 'No stars yet',
+        emptyText: 'Your repository has no stargazers yet.'
       });
-
-      renderGrid('gridUnstars', 'loadingUnstars', unstars, {
+      renderGrid('gridUnstars', unstars, {
         badge: 'Unstarred', badgeClass: 'unstar', reverse: true,
-        emptyEmoji: '✨', emptyText: 'No unstars detected yet.'
+        emptyTitle: 'No unstars detected',
+        emptyText: 'No one has removed their star yet.'
       });
     }
 
