@@ -6,3 +6,6 @@ Thumbs.db
 
 # Local environment — never commit secrets
 .env
+
+# Local config with PAT — never commit
+config.js
