@@ -3,6 +3,13 @@ import json
 import requests
 from datetime import datetime, timezone
 
+# Load .env file for local development (ignored in CI where env vars are injected directly)
+try:
+    from dotenv import load_dotenv
+    load_dotenv(dotenv_path=os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), ".env"), override=True)
+except ImportError:
+    pass  # python-dotenv not installed — that's fine in CI
+
 GITHUB_TOKEN = os.environ.get("GH_PAT") or os.environ.get("GITHUB_TOKEN", "")
 GITHUB_USERNAME = os.environ.get("GITHUB_USERNAME") or "KanishJebaMathewM"
 TRACK_REPO = os.environ.get("TRACK_REPO") or "KanishJebaMathewM/Truxify"
@@ -80,11 +87,12 @@ def get_repo_info():
 
 
 def get_stargazers():
+    """
+    Fetch users who starred TRACK_REPO (i.e., who starred KanishJebaMathewM/Truxify).
+    Requires public_repo scope on a classic PAT.
+    """
     if not TRACK_REPO:
         return []
-    # Use standard accept header (NOT star+json which requires push access).
-    # The star+json preview header returns starred_at timestamps but needs
-    # collaborator access. Standard header works for any public repo with a PAT.
     results = []
     page = 1
     while True:
@@ -93,14 +101,12 @@ def get_stargazers():
             headers=HEADERS,
         )
         if resp.status_code in (401, 403, 404):
-            print(f"  Note: GitHub stargazers endpoint returned HTTP {resp.status_code}.")
+            print(f"  Note: stargazers endpoint returned HTTP {resp.status_code}.")
             try:
                 err_body = resp.json()
                 print(f"  GitHub message: {err_body.get('message', 'no message')}")
-                print(f"  Documentation: {err_body.get('documentation_url', '')}")
             except Exception:
                 pass
-            print("  Falling back to total stargazers count from repo info.")
             return []
         resp.raise_for_status()
         data = resp.json()
@@ -108,11 +114,48 @@ def get_stargazers():
             break
         results.extend(data)
         page += 1
-    # Standard endpoint returns user objects directly (no starred_at available)
     return [{
         "username": s["login"],
         "avatar_url": s["avatar_url"],
         "html_url": s["html_url"],
+    } for s in results]
+
+
+def get_starred_repos():
+    """
+    Fetch repos that the authenticated user (GITHUB_USERNAME) has personally starred.
+    Uses /user/starred — requires read:user or starring scope.
+    """
+    if not GITHUB_TOKEN:
+        print("  Warning: No token — cannot fetch starred repos. Skipping.")
+        return []
+    results = []
+    page = 1
+    while True:
+        resp = requests.get(
+            f"https://api.github.com/user/starred?per_page=100&page={page}",
+            headers=HEADERS,
+        )
+        if resp.status_code in (401, 403, 404):
+            print(f"  Note: /user/starred returned HTTP {resp.status_code}.")
+            try:
+                err_body = resp.json()
+                print(f"  GitHub message: {err_body.get('message', 'no message')}")
+            except Exception:
+                pass
+            return []
+        resp.raise_for_status()
+        data = resp.json()
+        if not data:
+            break
+        results.extend(data)
+        page += 1
+    return [{
+        "repo": s["full_name"],
+        "owner": s["owner"]["login"],
+        "avatar_url": s["owner"]["avatar_url"],
+        "html_url": s["html_url"],
+        "description": s.get("description") or "",
     } for s in results]
 
 
@@ -127,8 +170,15 @@ def load_json(filename):
 def save_json(filename, data):
     os.makedirs(DATA_DIR, exist_ok=True)
     path = os.path.join(DATA_DIR, filename)
+    new_content = json.dumps(data, indent=2, ensure_ascii=False) + "\n"
+    # Only write if content changed — avoids dirty git state on no-op runs
+    if os.path.exists(path):
+        with open(path, "r", encoding="utf-8") as f:
+            existing = f.read()
+        if existing == new_content:
+            return  # No change, skip write
     with open(path, "w", encoding="utf-8") as f:
-        json.dump(data, f, indent=2, ensure_ascii=False)
+        f.write(new_content)
 
 
 def main():
@@ -149,33 +199,24 @@ def main():
     current_forks = get_forks()
     print(f"  Found {len(current_forks)} forks")
 
-    print("Fetching stargazers...")
+    print("Fetching stargazers (who starred Truxify)...")
     current_stars = get_stargazers()
-    api_stars_available = len(current_stars) > 0  # False when 403 fallback happened
+    api_stars_available = len(current_stars) > 0
+
+    print("Fetching repos you've starred...")
+    current_starred_repos = get_starred_repos()
 
     repo_info = get_repo_info()
     stars_total = repo_info.get("stargazers_count", len(current_stars))
-    print(f"  Found {len(current_stars)} stargazers")
-    print(f"  Repository stars count: {stars_total}")
+    print(f"  Found {len(current_stars)} stargazers on {TRACK_REPO}")
+    print(f"  You've personally starred {len(current_starred_repos)} repos")
 
-    # If API returned empty due to 403, load previously saved stars so we don't wipe them
+    # If API returned empty (e.g. no token), preserve previously saved data
     if not api_stars_available:
         prev_stars_file = load_json("stars.json") or []
         if prev_stars_file:
             print("  Using previously saved stars.json (API unavailable)")
             current_stars = prev_stars_file
-        else:
-            # No previous file either — build minimal placeholder entries from snapshot usernames
-            prev_snap = load_json("snapshot.json") or {}
-            prev_star_names = prev_snap.get("stars", [])
-            if prev_star_names:
-                print(f"  Building {len(prev_star_names)} placeholder star entries from snapshot")
-                current_stars = [{
-                    "username": u,
-                    "avatar_url": f"https://github.com/{u}.png?size=80",
-                    "html_url": f"https://github.com/{u}",
-                } for u in prev_star_names]
-    print(f"  Repository stars count: {stars_total}")
 
     # Load previous snapshot
     prev_snapshot = load_json("snapshot.json") or {
@@ -257,7 +298,7 @@ def main():
         })
         print(f"  Unfork detected: {owner}")
 
-    # Append new unstars
+    # Append new unstars (users who un-starred Truxify)
     for username in sorted(new_unstars):
         info = prev_star_map.get(username, {})
         unstars_history.append({
@@ -273,6 +314,7 @@ def main():
     save_json("following.json", current_following)
     save_json("forks.json", current_forks)
     save_json("stars.json", current_stars)
+    save_json("starred_repos.json", current_starred_repos)
     save_json("unfollowers.json", unfollowers_history)
     save_json("unfollowed.json", unfollowed_history)
     save_json("unforks.json", unforks_history)
@@ -288,10 +330,11 @@ def main():
         "following_count": len(current_following),
         "forks_count": len(current_forks),
         "stars_count": stars_total,
+        "starred_repos_count": len(current_starred_repos),
         "followers": sorted(curr_follower_names),
         "following": sorted(curr_following_names),
         "forks": sorted(curr_fork_owners),
-        "stars": sorted(curr_star_users),
+        "stars": sorted(curr_star_users),  # usernames who starred Truxify
     }
     save_json("snapshot.json", snapshot)
 

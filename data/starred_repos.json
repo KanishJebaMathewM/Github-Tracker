@@ -1,0 +1,30 @@
+[
+  {
+    "repo": "nilbuild/developer-roadmap",
+    "owner": "nilbuild",
+    "avatar_url": "https://avatars.githubusercontent.com/u/4921183?v=4",
+    "html_url": "https://github.com/nilbuild/developer-roadmap",
+    "description": "Interactive roadmaps, guides and other educational content to help developers grow in their careers."
+  },
+  {
+    "repo": "pmndrs/zustand",
+    "owner": "pmndrs",
+    "avatar_url": "https://avatars.githubusercontent.com/u/45790596?v=4",
+    "html_url": "https://github.com/pmndrs/zustand",
+    "description": "🐻 Bear necessities for state management in React"
+  },
+  {
+    "repo": "SSWConsulting/codeauditor-scan-site",
+    "owner": "SSWConsulting",
+    "avatar_url": "https://avatars.githubusercontent.com/u/7947936?v=4",
+    "html_url": "https://github.com/SSWConsulting/codeauditor-scan-site",
+    "description": ""
+  },
+  {
+    "repo": "periphery-security/action-trissue",
+    "owner": "periphery-security",
+    "avatar_url": "https://avatars.githubusercontent.com/u/148765177?v=4",
+    "html_url": "https://github.com/periphery-security/action-trissue",
+    "description": "Create Github Issues based on Trivy Report data"
+  }
+]
