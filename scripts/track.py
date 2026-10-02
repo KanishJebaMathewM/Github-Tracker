@@ -223,6 +223,27 @@ def main():
         "followers": [], "following": [], "forks": [], "stars": []
     }
 
+    # Safety guard: if a fetch returned 0 results but previously had data, the API
+    # likely failed silently. Abort change-detection to avoid false unfollows/unforks/unstars.
+    api_ok = True
+    if len(current_followers) == 0 and len(prev_snapshot.get("followers", [])) > 0:
+        print("  WARNING: followers came back empty but snapshot has data — skipping change detection.")
+        api_ok = False
+    if len(current_following) == 0 and len(prev_snapshot.get("following", [])) > 0:
+        print("  WARNING: following came back empty but snapshot has data — skipping change detection.")
+        api_ok = False
+    if len(current_forks) == 0 and len(prev_snapshot.get("forks", [])) > 0:
+        print("  WARNING: forks came back empty but snapshot has data — skipping change detection.")
+        api_ok = False
+    if len(current_stars) == 0 and len(prev_snapshot.get("stars", [])) > 0:
+        print("  WARNING: stars came back empty but snapshot has data — skipping change detection.")
+        api_ok = False
+
+    if not api_ok:
+        print("\nAborting update — one or more API responses were empty unexpectedly.")
+        print("No data files will be modified. Check token permissions and retry.")
+        return
+
     # Compute sets
     curr_follower_names = {u["username"] for u in current_followers}
     prev_follower_names = set(prev_snapshot.get("followers", []))
