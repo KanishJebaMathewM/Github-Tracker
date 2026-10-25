@@ -1,5 +1,12 @@
 [
   {
+    "repo": "Graphify-Labs/graphify",
+    "owner": "Graphify-Labs",
+    "avatar_url": "https://avatars.githubusercontent.com/u/297659074?v=4",
+    "html_url": "https://github.com/Graphify-Labs/graphify",
+    "description": "Turn any codebase, with its docs, SQL schemas, configs, and PDFs, into a queryable knowledge graph. A /graphify skill for Claude Code, Cursor, Codex, and Gemini CLI: local deterministic AST parsing, every edge explained, no vector store."
+  },
+  {
     "repo": "nilbuild/developer-roadmap",
     "owner": "nilbuild",
     "avatar_url": "https://avatars.githubusercontent.com/u/4921183?v=4",
